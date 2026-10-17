@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Celestial Birthday Journey</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons & Canvas Confetti -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            handwriting: ['"Caveat"', 'cursive'],
+          },
+          colors: {
+            cosmic: {
+              950: '#030014',
+              900: '#070617',
+              800: '#0e0b25',
+              border: 'rgba(255, 255, 255, 0.08)',
+              glass: 'rgba(255, 255, 255, 0.03)',
+            }
+          },
+          animation: {
+            'aurora': 'aurora 18s ease-in-out infinite alternate',
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'flicker': 'flicker 1.8s infinite',
+          },
+          keyframes: {
+            aurora: {
+              '0%': { transform: 'translate(0, 0) scale(1)' },
+              '50%': { transform: 'translate(80px, -60px) scale(1.15)' },
+              '100%': { transform: 'translate(-60px, 40px) scale(0.95)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            flicker: {
+              '0%, 100%': { opacity: '0.95', transform: 'scale(1) skewX(0deg)' },
+              '25%': { opacity: '0.8', transform: 'scale(0.97) skewX(-2deg)' },
+              '50%': { opacity: '1', transform: 'scale(1.05) skewX(2deg)' },
+              '75%': { opacity: '0.85', transform: 'scale(0.98) skewX(-1deg)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* 2025 Glassmorphism & Micro-Gradients */
+    .glass-panel {
+      background: rgba(14, 11, 37, 0.55);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    
+    .glow-radial {
+      background: radial-gradient(circle at 50% 50%, rgba(217, 70, 239, 0.15) 0%, rgba(6, 182, 212, 0.08) 50%, transparent 80%);
+    }
+
+    /* Subtle Film Grain */
+    .bg-noise {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+
+    /* Candle Animation */
+    .flame {
+      background: radial-gradient(ellipse at bottom, #fff 0%, #fef08a 25%, #f97316 65%, transparent 90%);
+      filter: drop-shadow(0 0 16px rgba(249, 115, 22, 0.95)) drop-shadow(0 0 30px rgba(245, 158, 11, 0.5));
+      border-radius: 50% 50% 35% 35%;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #030014; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+  </style>
+</head>
+
+<body class="bg-cosmic-950 text-slate-100 font-sans antialiased overflow-x-hidden selection:bg-fuchsia-500 selection:text-white">
+
+  <!-- Interactive Canvas Background for Stars & Floating Lanterns -->
+  <canvas id="ambient-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+  <div class="fixed inset-0 bg-noise pointer-events-none z-10"></div>
+
+  <!-- Ambient Glowing Aurora Mesh Orbs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 -left-40 w-96 md:w-[600px] h-96 md:h-[600px] bg-fuchsia-600/20 rounded-full blur-[140px] animate-aurora"></div>
+    <div class="absolute top-1/2 -right-40 w-80 md:w-[500px] h-80 md:h-[500px] bg-cyan-500/15 rounded-full blur-[140px] animate-aurora" style="animation-delay: -5s;"></div>
+    <div class="absolute -bottom-40 left-1/3 w-80 md:w-[600px] h-80 md:h-[600px] bg-violet-600/15 rounded-full blur-[150px] animate-aurora" style="animation-delay: -9s;"></div>
+  </div>
+
+  <!-- Ambient Audio & Soundscape Controls -->
+  <div class="fixed top-6 right-6 z-50 flex items-center gap-3">
+    <button id="audio-toggle" class="glass-panel px-4 py-2.5 rounded-full flex items-center gap-2.5 text-xs tracking-wider uppercase text-slate-300 hover:text-white transition duration-300 hover:border-white/20 active:scale-95 shadow-lg group">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 group-[.playing]:animate-ping"></span>
+      <i data-lucide="volume-2" class="w-4 h-4 text-fuchsia-400"></i>
+      <span id="audio-label">Sound On</span>
+    </button>
+  </div>
+
+  <!-- ==================== GATE / ENTRY OVERLAY ==================== -->
+  <section id="entry-gate" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-cosmic-950/95 backdrop-blur-2xl transition-all duration-1000 p-6">
+    <div class="max-w-md w-full text-center space-y-8">
+      <div class="inline-flex p-3.5 rounded-2xl bg-white/5 border border-white/10 shadow-2xl animate-float">
+        <i data-lucide="sparkles" class="w-8 h-8 text-fuchsia-400"></i>
+      </div>
+      
+      <div class="space-y-3">
+        <p class="text-xs uppercase tracking-[0.3em] text-cyan-400 font-semibold">Incoming Transmission</p>
+        <h1 class="text-3xl md:text-4xl font-display font-bold tracking-tight text-white">
+          A Universe Built <br><span class="bg-gradient-to-r from-fuchsia-400 via-pink-300 to-cyan-300 bg-clip-text text-transparent">Just For You</span>
+        </h1>
+        <p class="text-slate-400 text-sm leading-relaxed max-w-sm mx-auto">
+          Every star in this digital sky is synchronized to celebrate your presence today.
+        </p>
+      </div>
+
+      <!-- Unlock Hold Button -->
+      <div class="relative pt-2">
+        <button id="unlock-btn" class="relative group w-full py-4 rounded-2xl glass-panel border border-fuchsia-500/30 hover:border-fuchsia-500/60 overflow-hidden transition-all duration-300 active:scale-[0.98]">
+          <div id="unlock-progress" class="absolute inset-0 bg-gradient-to-r from-fuchsia-600/40 via-violet-600/40 to-cyan-600/40 w-0 transition-all duration-150 pointer-events-none"></div>
+          <span class="relative z-10 text-sm font-medium tracking-wide flex items-center justify-center gap-2 text-white">
+            <i data-lucide="heart" class="w-4 h-4 text-fuchsia-400 group-hover:scale-125 transition-transform"></i>
+            <span id="unlock-text">Tap or Hold to Step Inside</span>
+          </span>
+        </button>
+        <p class="text-[11px] text-slate-500 mt-2.5">Headphones recommended for the ambient soundscape</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN EXPERIENCE ==================== -->
+  <main class="relative z-20 min-h-screen max-w-5xl mx-auto px-6 py-20 md:py-32 space-y-36">
+
+    <!-- HERO SECTION -->
+    <section class="text-center space-y-6 pt-12 md:pt-16">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs text-slate-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-ping"></span>
+        <span id="hero-badge">Today's Star of the Cosmos</span>
+      </div>
+
+      <h1 class="text-5xl sm:text-7xl md:text-8xl font-display font-extrabold tracking-tight leading-[1.08]">
+        Happy Birthday, <br class="hidden sm:inline">
+        <span class="bg-gradient-to-r from-fuchsia-400 via-rose-300 to-cyan-300 bg-clip-text text-transparent" id="recipient-name">
+          Maya
+        </span>
+      </h1>
+
+      <p class="text-slate-400 text-base md:text-lg max-w-xl mx-auto font-light leading-relaxed">
+        The cosmos got a whole lot brighter the day you arrived. Here’s a little sanctuary designed to honor how effortlessly remarkable you are.
+      </p>
+
+      <div class="pt-4 flex justify-center gap-4">
+        <a href="#cake-section" class="px-6 py-3 rounded-full bg-white text-slate-950 font-medium text-sm hover:bg-slate-200 transition shadow-xl shadow-white/10 hover:shadow-fuchsia-500/20 active:scale-95 flex items-center gap-2">
+          <span>Make a Wish</span>
+          <i data-lucide="arrow-down" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE BIRTHDAY CAKE & CANDLE SECTION -->
+    <section id="cake-section" class="scroll-mt-24">
+      <div class="glass-panel rounded-3xl p-8 md:p-14 text-center relative overflow-hidden">
+        <div class="glow-radial absolute inset-0 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-md mx-auto space-y-8">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-fuchsia-400 font-semibold">Interactive Ritual</span>
+            <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Blow Out Your Candle</h2>
+            <p class="text-sm text-slate-400 mt-2">Close your eyes, hold your deepest wish in mind, and tap the flame to blow it out.</p>
+          </div>
+
+          <!-- Candle Container -->
+          <div class="py-10 flex flex-col items-center justify-center relative cursor-pointer select-none group" id="candle-trigger">
+            <!-- Flame & Glow -->
+            <div id="flame-wrapper" class="relative flex flex-col items-center transition-all duration-500">
+              <div id="flame-body" class="w-7 h-14 flame animate-flicker"></div>
+              <!-- Smoke Effect (Hidden until blown) -->
+              <div id="smoke" class="hidden absolute -top-8 w-2 h-10 bg-gradient-to-t from-slate-400/50 to-transparent blur-sm rounded-full animate-float"></div>
+            </div>
+
+            <!-- Candle Wick -->
+            <div class="w-1 h-3 bg-slate-400 rounded-t-sm"></div>
+
+            <!-- Candle Wax Body -->
+            <div class="w-16 h-28 rounded-t-md bg-gradient-to-b from-rose-200 via-pink-300 to-fuchsia-400 relative shadow-2xl flex flex-col items-center justify-between py-3 border border-white/20">
+              <div class="w-full h-1 bg-white/40 rounded-full blur-[1px]"></div>
+              <i data-lucide="sparkle" class="w-4 h-4 text-white/50"></i>
+              <div class="w-full h-1 bg-black/10"></div>
+            </div>
+
+            <!-- Cake Base Top Plate -->
+            <div class="w-48 h-8 rounded-full bg-slate-800/80 border border-white/10 -mt-3 shadow-inner"></div>
+          </div>
+
+          <!-- Wish Status Feedback -->
+          <div id="candle-status" class="text-sm font-medium text-slate-300 flex items-center justify-center gap-2">
+            <i data-lucide="wind" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
+            <span>Tap the flame to make your wish reality</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2025 BENTO GRID: REASONS & MEMORIES -->
+    <section class="space-y-8">
+      <div class="text-center space-y-2">
+        <p class="text-xs uppercase tracking-widest text-cyan-400 font-semibold">Curated Reflections</p>
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-white">A Few Things I Cherish About You</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Bento Card 1: Your Energy -->
+        <div class="glass-panel p-7 rounded-3xl space-y-4 hover:border-fuchsia-500/40 transition duration-500 flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="w-11 h-11 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center text-fuchsia-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="sun" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-xl font-display font-bold text-white">Your Magnetic Warmth</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              You walk into a room and the temperature rises. You have that rare ability to make everyone around you feel seen, valued, and instantly at ease.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+            <span>Core Aura</span>
+            <span class="text-fuchsia-300 font-mono">100% Pure Light</span>
+          </div>
+        </div>
+
+        <!-- Bento Card 2: Interactive Compliment Deck (Spans 2 columns on desktop) -->
+        <div class="glass-panel p-7 rounded-3xl md:col-span-2 flex flex-col justify-between hover:border-cyan-500/40 transition duration-500 relative overflow-hidden group">
+          <div class="relative z-10 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                <i data-lucide="message-square-heart" class="w-5 h-5"></i>
+              </div>
+              <button id="next-quote-btn" class="text-xs px-3 py-1.5 rounded-full border border-white/10 hover:border-white/30 text-slate-300 hover:text-white transition flex items-center gap-1.5 active:scale-95">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Shuffle
+              </button>
+            </div>
+
+            <div>
+              <span class="text-[11px] uppercase tracking-wider text-cyan-300 font-mono">Daily Reminder</span>
+              <p id="quote-display" class="text-xl md:text-2xl font-display font-medium text-slate-100 mt-2 transition-opacity duration-300 min-h-[60px]">
+                "The world is simply softer, kinder, and infinitely more joyful with your laughter echoing in it."
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-6 relative z-10 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+            <span>Tap shuffle for more reminders</span>
+            <span class="text-cyan-300 font-mono" id="quote-counter">Note 1 of 5</span>
+          </div>
+        </div>
+
+        <!-- Bento Card 3: The Little Things -->
+        <div class="glass-panel p-7 rounded-3xl md:col-span-2 hover:border-rose-500/40 transition duration-500 flex flex-col justify-between group">
+          <div class="space-y-4">
+            <div class="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="compass" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-xl font-display font-bold text-white">Your Courage & Grit</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Beyond how gentle and kind you are, I admire your quiet strength. The way you persist through storms with grace is one of the most inspiring things about you.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-white/5 text-xs text-slate-500 flex justify-between">
+            <span>Quiet Superpower</span>
+            <span class="text-rose-300 font-mono">Unstoppable</span>
+          </div>
+        </div>
+
+        <!-- Bento Card 4: Live Planetary Orbit Stat -->
+        <div class="glass-panel p-7 rounded-3xl space-y-4 hover:border-violet-500/40 transition duration-500 flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="w-11 h-11 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="infinity" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-xl font-display font-bold text-white">Another Orbit Done</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              365 days of growth, new stories, inside jokes, and dreams woven together. You did it beautifully.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-white/5 text-xs text-slate-500 flex justify-between">
+            <span>Next Chapter</span>
+            <span class="text-violet-300 font-mono">Level Next ✦</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECRET ENVELOPE / HANDWRITTEN LETTER -->
+    <section class="max-w-2xl mx-auto">
+      <div class="text-center mb-8 space-y-2">
+        <span class="text-xs uppercase tracking-widest text-fuchsia-400 font-semibold">Private Note</span>
+        <h2 class="text-3xl font-display font-bold text-white">A Letter From The Heart</h2>
+        <p class="text-xs text-slate-400">Click the wax seal to unfold</p>
+      </div>
+
+      <div id="envelope-wrapper" class="relative cursor-pointer transition-all duration-700">
+        <!-- Folded Envelope State -->
+        <div id="envelope-closed" class="glass-panel p-10 rounded-3xl border border-white/10 flex flex-col items-center justify-center gap-6 shadow-2xl hover:border-fuchsia-500/30 transition group">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-rose-600 to-fuchsia-600 flex items-center justify-center text-white shadow-xl shadow-fuchsia-600/30 group-hover:scale-110 transition-transform">
+            <i data-lucide="mail" class="w-7 h-7"></i>
+          </div>
+          <div class="text-center space-y-1">
+            <p class="text-base font-medium text-white">For Your Eyes Only</p>
+            <p class="text-xs text-slate-400">Tap anywhere to break the seal</p>
+          </div>
+        </div>
+
+        <!-- Open Letter State (Toggled via JS) -->
+        <div id="envelope-letter" class="hidden glass-panel p-8 md:p-12 rounded-3xl border border-white/15 shadow-2xl space-y-6 animate-float">
+          <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <span class="text-xs font-mono text-fuchsia-400 tracking-wider uppercase">Dearest Maya,</span>
+            <span class="text-xs text-slate-500">October 17</span>
+          </div>
+
+          <div class="font-handwriting text-2xl md:text-3xl leading-relaxed text-slate-200 space-y-4">
+            <p>
+              I wanted to write something that wouldn't fade away with wrapping paper.
+            </p>
+            <p>
+              Thank you for being the person who brings effortless calm into chaotic days, and who reminds me what it feels like to genuinely smile without trying.
+            </p>
+            <p>
+              May this new year bring you everything you give to others: deep laughter, unshakeable peace, and people who love you as fiercely as you deserve.
+            </p>
+            <p class="pt-4 text-right text-rose-300">
+              — Forever in your corner, <br>
+              <span class="text-xl font-sans text-slate-400 font-normal">Alex</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELEASE A WISH / FLOATING LANTERNS -->
+    <section class="text-center space-y-8 pb-10">
+      <div class="max-w-md mx-auto space-y-3">
+        <span class="text-xs uppercase tracking-widest text-cyan-400 font-semibold">Skyward Intention</span>
+        <h2 class="text-3xl font-display font-bold text-white">Release a Wish to the Sky</h2>
+        <p class="text-slate-400 text-sm">Write whatever your heart longs for this year and cast it upward into the constellation.</p>
+      </div>
+
+      <form id="wish-form" class="max-w-md mx-auto flex gap-2">
+        <input 
+          id="wish-input"
+          type="text" 
+          placeholder="E.g., More adventures, peace, boundless love..." 
+          class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 backdrop-blur-md transition"
+          required
+        >
+        <button 
+          type="submit" 
+          class="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-fuchsia-600 text-white font-medium text-sm hover:opacity-90 transition active:scale-95 flex items-center justify-center shadow-lg shadow-cyan-500/20"
+        >
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <!-- Active Floating Wish Count -->
+      <p id="wish-counter-text" class="text-xs text-slate-500 font-mono">0 Wishes floating in our sky</p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="pt-20 border-t border-white/5 text-center space-y-4">
+      <p class="text-xs text-slate-500 tracking-wider">
+        Crafted with love, code, and stardust &bull; 2025 Edition
+      </p>
+    </footer>
+  </main>
+
+  <!-- ==================== JAVASCRIPT ENGINE ==================== -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // ==========================================
+    // 1. CONFIGURATION & CUSTOMIZATION
+    // ==========================================
+    const CONFIG = {
+      recipientName: "Maya",
+      senderName: "Alex",
+      notes: [
+        "The world is simply softer, kinder, and infinitely more joyful with your laughter echoing in it.",
+        "Your empathy is a quiet superpower. Never forget how profoundly you touch lives.",
+        "May this year give you courage to chase that dream you only whisper about when it's dark.",
+        "Thank you for being you — completely unfiltered, wonderfully spontaneous, and deeply genuine.",
+        "Every chapter ahead of you is going to be richer and bolder than the last."
+      ]
+    };
+
+    // Update names dynamically
+    document.getElementById('recipient-name').textContent = CONFIG.recipientName;
+
+    // ==========================================
+    // 2. WEB AUDIO API SYNTHESIZER (No 404s!)
+    // ==========================================
+    let audioCtx = null;
+    let isSoundOn = false;
+    let ambientOscillator = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Play pleasant synthetic chime
+    function playChime(freq = 523.25, type = 'sine', duration = 0.8) {
+      if (!isSoundOn) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn("Audio play prevented:", e);
+      }
+    }
+
+    function playChord() {
+      if (!isSoundOn) return;
+      [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+        setTimeout(() => playChime(freq, 'sine', 1.2), idx * 120);
+      });
+    }
+
+    // Sound toggle button
+    const audioBtn = document.getElementById('audio-toggle');
+    const audioLabel = document.getElementById('audio-label');
+
+    audioBtn.addEventListener('click', () => {
+      initAudio();
+      isSoundOn = !isSoundOn;
+      if (isSoundOn) {
+        audioLabel.textContent = "Sound On";
+        audioBtn.classList.add('playing');
+        playChord();
+      } else {
+        audioLabel.textContent = "Muted";
+        audioBtn.classList.remove('playing');
+      }
+    });
+
+    // ==========================================
+    // 3. UNLOCK ENTRY GATE
+    // ==========================================
+    const entryGate = document.getElementById('entry-gate');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const unlockProgress = document.getElementById('unlock-progress');
+
+    let unlockTimeout = null;
+
+    function unlockExperience() {
+      initAudio();
+      isSoundOn = true;
+      audioLabel.textContent = "Sound On";
+      audioBtn.classList.add('playing');
+      playChord();
+
+      entryGate.style.opacity = '0';
+      entryGate.style.transform = 'scale(1.05)';
+      setTimeout(() => {
+        entryGate.style.display = 'none';
+        triggerConfetti(0.5, 0.4);
+      }, 900);
+    }
+
+    unlockBtn.addEventListener('click', unlockExperience);
+
+    // ==========================================
+    // 4. CANDLE INTERACTION & CONFETTI
+    // ==========================================
+    const candleTrigger = document.getElementById('candle-trigger');
+    const flameBody = document.getElementById('flame-body');
+    const smoke = document.getElementById('smoke');
+    const candleStatus = document.getElementById('candle-status');
+    let candleBlown = false;
+
+    candleTrigger.addEventListener('click', () => {
+      if (candleBlown) return;
+      candleBlown = true;
+
+      // Extinguish animation
+      flameBody.style.transition = 'all 0.4s ease';
+      flameBody.style.opacity = '0';
+      flameBody.style.transform = 'scale(0.1)';
+      smoke.classList.remove('hidden');
+
+      playChime(350, 'triangle', 0.5);
+      setTimeout(() => playChord(), 200);
+
+      candleStatus.innerHTML = `
+        <span class="text-emerald-400 flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          Your wish has taken flight! May it all unfold.
+        </span>
+      `;
+      lucide.createIcons();
+
+      // Confetti burst
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#f43f5e', '#ec4899', '#d946ef', '#06b6d4', '#fbbf24']
+      });
+    });
+
+    function triggerConfetti(x = 0.5, y = 0.5) {
+      confetti({
+        particleCount: 90,
+        spread: 70,
+        origin: { x, y },
+        colors: ['#d946ef', '#06b6d4', '#f43f5e', '#a855f7']
+      });
+    }
+
+    // ==========================================
+    // 5. SHUFFLE COMPLIMENT DECK
+    // ==========================================
+    const quoteDisplay = document.getElementById('quote-display');
+    const quoteCounter = document.getElementById('quote-counter');
+    const nextQuoteBtn = document.getElementById('next-quote-btn');
+    let currentQuoteIdx = 0;
+
+    nextQuoteBtn.addEventListener('click', () => {
+      playChime(600, 'sine', 0.2);
+      quoteDisplay.style.opacity = '0';
+      setTimeout(() => {
+        currentQuoteIdx = (currentQuoteIdx + 1) % CONFIG.notes.length;
+        quoteDisplay.textContent = `"${CONFIG.notes[currentQuoteIdx]}"`;
+        quoteCounter.textContent = `Note ${currentQuoteIdx + 1} of ${CONFIG.notes.length}`;
+        quoteDisplay.style.opacity = '1';
+      }, 250);
+    });
+
+    // ==========================================
+    // 6. ENVELOPE OPEN / LETTER UNFOLD
+    // ==========================================
+    const envelopeClosed = document.getElementById('envelope-closed');
+    const envelopeLetter = document.getElementById('envelope-letter');
+
+    envelopeClosed.addEventListener('click', () => {
+      playChime(523.25, 'sine', 0.4);
+      envelopeClosed.classList.add('hidden');
+      envelopeLetter.classList.remove('hidden');
+      triggerConfetti(0.5, 0.65);
+    });
+
+    // ==========================================
+    // 7. AMBIENT BACKGROUND & LANTERN ENGINE
+    // ==========================================
+    const canvas = document.getElementById('ambient-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    // Stars
+    const stars = Array.from({ length: 140 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 1.3,
+      alpha: Math.random(),
+      twinkleSpeed: 0.005 + Math.random() * 0.015
+    }));
+
+    // Floating Sky Lanterns / Wishes
+    const lanterns = [];
+
+    function addLantern(text = "") {
+      lanterns.push({
+        x: width * 0.3 + Math.random() * (width * 0.4),
+        y: height + 20,
+        targetX: Math.random() * width,
+        vy: 1.2 + Math.random() * 0.8,
+        vx: (Math.random() - 0.5) * 0.5,
+        radius: 4 + Math.random() * 3,
+        alpha: 1,
+        text: text
+      });
+    }
+
+    // Animation Loop
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Render stars
+      stars.forEach(star => {
+        star.alpha += star.twinkleSpeed;
+        if (star.alpha > 1 || star.alpha < 0.2) star.twinkleSpeed = -star.twinkleSpeed;
+        
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, star.alpha)})`;
+        ctx.fill();
+      });
+
+      // Render sky lanterns
+      for (let i = lanterns.length - 1; i >= 0; i--) {
+        const l = lanterns[i];
+        l.y -= l.vy;
+        l.x += l.vx;
+        
+        // Warm Lantern Glow
+        const radGrad = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.radius * 4);
+        radGrad.addColorStop(0, 'rgba(254, 215, 170, 0.9)');
+        radGrad.addColorStop(0.4, 'rgba(249, 115, 22, 0.4)');
+        radGrad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = radGrad;
+        ctx.beginPath();
+        ctx.arc(l.x, l.y, l.radius * 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(l.x, l.y, l.radius * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // If lantern carries custom text
+        if (l.text) {
+          ctx.font = '11px "Plus Jakarta Sans"';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.fillText(l.text, l.x + 12, l.y + 4);
+        }
+
+        // Remove lanterns that drifted off top
+        if (l.y < -50) lanterns.splice(i, 1);
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ==========================================
+    // 8. WISH FORM HANDLER
+    // ==========================================
+    const wishForm = document.getElementById('wish-form');
+    const wishInput = document.getElementById('wish-input');
+    const wishCounterText = document.getElementById('wish-counter-text');
+    let totalWishes = 0;
+
+    wishForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = wishInput.value.trim();
+      if (!val) return;
+
+      addLantern(val);
+      playChime(784, 'sine', 0.7);
+
+      totalWishes++;
+      wishCounterText.textContent = `${totalWishes} Wish${totalWishes > 1 ? 'es' : ''} floating in our sky`;
+
+      confetti({
+        particleCount: 40,
+        spread: 60,
+        origin: { y: 0.85 },
+        colors: ['#38bdf8', '#818cf8', '#f472b6']
+      });
+
+      wishInput.value = '';
+    });
+  </script>
+</body>
+</html>
